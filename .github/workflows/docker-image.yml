@@ -20,6 +20,6 @@ jobs:
           DOCKER_PASSWORD: ${{secrets.Docker_PASSWORD}}
       run: docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
     - name: Build the Docker image
-      run: docker build -t backend .
+      run: docker build -t backend -f backend/Dockerfile backend .
     - name: Push to Dockerhub
       run: docker push Varun-2538/backend:latest

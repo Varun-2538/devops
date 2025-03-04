@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Backend Docker CI/CD
 
 on:
   push:
@@ -17,11 +17,19 @@ jobs:
     - name: Login to Docker Hub
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}  # Fix the capitalization issue
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-    - name: Build the Docker Image
-      run: docker build -t Varun-2538/backend:latest -f backend/Dockerfile backend  # Add correct tag
+    - name: Build and Tag Backend Docker Image
+      run: |
+        docker build -t varun950/backend:latest -f backend/Dockerfile backend
+        docker tag varun950/backend:latest docker.io/varun950/backend:latest  # Ensure correct repository name
 
-    - name: Push to Docker Hub
-      run: docker push Varun-2538/backend:latest
+    - name: Push Backend Image to Docker Hub
+      run: docker push docker.io/varun950/backend:latest
+
+    - name: Deploy Backend Container (Optional)
+      run: |
+        docker stop backend-container || true
+        docker rm backend-container || true
+        docker run -d -p 3000:3000 --name backend-container docker.io/varun950/backend:latest

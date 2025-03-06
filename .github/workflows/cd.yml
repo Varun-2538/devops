@@ -1,0 +1,21 @@
+name: CD Pipeline
+
+on:
+  workflow_run:
+    workflows: ["CI Pipeline"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull Docker image
+        run: sudo docker pull your-dockerhub-username/your-image-name:latest
+
+      - name: Delete Old Docker Container
+        run: sudo docker rm -f your-container-name || true
+
+      - name: Run Docker Container
+        run: sudo docker run -d -p 8080:8080 --name your-container-name your-dockerhub-username/your-image-name
